@@ -114,6 +114,13 @@ fun CreateNewAlbumDialog(
             red_400
         }
     }
+
+    val cancelTextColor = if (MaterialTheme.colors.isLight) {
+        black
+    } else {
+        white
+    }
+
     val mergedTextStyle = LocalTextStyle.current.merge(
         TextStyle(
             color = textColor,
@@ -241,7 +248,7 @@ fun CreateNewAlbumDialog(
             ) {
                 Text(
                     text = stringResource(id = positiveButtonTextResID),
-                    color = accent_900
+                    color = textColor
                 )
             }
         },
@@ -262,7 +269,7 @@ fun CreateNewAlbumDialog(
             ) {
                 Text(
                     stringResource(id = sharedR.string.general_dialog_cancel_button),
-                    color = accent_900
+                    color = cancelTextColor
                 )
             }
         }

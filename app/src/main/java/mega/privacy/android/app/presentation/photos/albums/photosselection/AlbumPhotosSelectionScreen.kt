@@ -69,6 +69,7 @@ import mega.privacy.android.domain.entity.photos.AlbumId
 import mega.privacy.android.domain.entity.photos.Photo
 import mega.privacy.android.legacy.core.ui.controls.dialogs.MegaDialog
 import mega.privacy.android.shared.original.core.ui.controls.layouts.MegaScaffold
+import mega.privacy.android.shared.original.core.ui.theme.accent_050
 import mega.privacy.android.shared.original.core.ui.theme.black
 import mega.privacy.android.shared.original.core.ui.theme.grey_alpha_054
 import mega.privacy.android.shared.original.core.ui.theme.grey_alpha_087
@@ -254,13 +255,15 @@ private fun AlbumPhotosSelectionHeader(
 ) {
     val isLight = MaterialTheme.colors.isLight
 
+    val textColor = accent_900.takeIf { isLight } ?: accent_050
+
     TopAppBar(
         title = {
             Column {
                 if (numSelectedPhotos > 0) {
                     Text(
                         text = "$numSelectedPhotos",
-                        color = accent_900,
+                        color = textColor,
                         fontWeight = FontWeight.W500,
                         style = MaterialTheme.typography.subtitle1,
                     )
@@ -274,6 +277,7 @@ private fun AlbumPhotosSelectionHeader(
                         overflow = TextOverflow.Ellipsis,
                         maxLines = 1,
                         style = MaterialTheme.typography.subtitle1,
+                        color = textColor
                     )
 
                     if (isLocationDetermined) {
@@ -289,7 +293,9 @@ private fun AlbumPhotosSelectionHeader(
         navigationIcon = {
             IconButton(onClick = onBackClicked) {
                 Icon(
-                    painter = painterResource(id = R.drawable.ic_arrow_back_white),
+                    painter = painterResource(id = R.drawable.ic_arrow_back_white.takeIf { isLight }
+                        ?: R.drawable.ic_arrow_back_black
+                    ),
                     contentDescription = null,
                     tint = accent_900.takeIf {
                         numSelectedPhotos > 0
@@ -301,7 +307,10 @@ private fun AlbumPhotosSelectionHeader(
             if (showFilterMenu) {
                 IconButton(onClick = onFilterClicked) {
                     Icon(
-                        painter = painterResource(id = R.drawable.ic_filter_light),
+                        painter = painterResource(
+                            id = R.drawable.ic_filter_light.takeIf { isLight }
+                                ?: R.drawable.ic_filter_dark
+                        ),
                         contentDescription = null,
                         tint = accent_900.takeIf {
                             numSelectedPhotos > 0
@@ -313,7 +322,9 @@ private fun AlbumPhotosSelectionHeader(
             if (numSelectedPhotos > 0) {
                 IconButton(onClick = onMoreClicked) {
                     Icon(
-                        painter = painterResource(id = R.drawable.ic_dots_vertical_white),
+                        painter = painterResource(
+                            id = R.drawable.ic_dots_vertical_white.takeIf { isLight }
+                                ?: mega.privacy.android.core.R.drawable.ic_dots_vertical_grey),
                         contentDescription = null,
                         tint = accent_900,
                     )
