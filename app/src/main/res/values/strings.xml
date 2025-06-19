@@ -5094,4 +5094,6 @@
     <string name="filestorage_menu_option_open_in_file_manager">Open in file manager</string>
     <!-- Snackbar message when file storage screen is unable to open 3rd-party File Manager -->
     <string name="filestorage_snackbar_file_manager_is_not_available">A suitable file manager app is not available on this device</string>
+
+    <string name="warning_device_offline">Your device is offline, please check and send again</string>
 </resources>

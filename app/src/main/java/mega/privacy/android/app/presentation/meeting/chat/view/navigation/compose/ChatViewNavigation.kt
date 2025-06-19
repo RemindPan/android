@@ -8,6 +8,7 @@ import androidx.navigation.NavHostController
 import androidx.navigation.compose.composable
 import com.google.accompanist.navigation.material.BottomSheetNavigator
 import com.google.accompanist.navigation.material.ExperimentalMaterialNavigationApi
+import mega.privacy.android.app.R
 import mega.privacy.android.app.presentation.meeting.chat.model.ChatUiState
 import mega.privacy.android.app.presentation.meeting.chat.model.ChatViewModel
 import mega.privacy.android.app.presentation.meeting.chat.view.ChatView
@@ -107,5 +108,12 @@ internal fun NavGraphBuilder.chatScreen(
             navHostController = navController,
             navigateToStorageSettings = navigateToStorageSettings,
         )
+
+        if (uiState.showOfflineDialog) {
+            CreateOfflineDialog(
+                R.string.offline_warning,
+                onDismissRequest = { viewModel.dismissOfflineDialog() }
+            )
+        }
     }
 }

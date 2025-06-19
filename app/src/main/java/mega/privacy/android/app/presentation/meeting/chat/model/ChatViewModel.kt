@@ -75,6 +75,8 @@ import mega.privacy.android.domain.qualifier.ApplicationScope
 import mega.privacy.android.domain.usecase.AddNodeType
 import mega.privacy.android.domain.usecase.GetChatRoomUseCase
 import mega.privacy.android.domain.usecase.GetNodeByIdUseCase
+import mega.privacy.android.domain.usecase.IsConnectNetworkUseCase
+import mega.privacy.android.domain.usecase.IsOnWifiNetworkUseCase
 import mega.privacy.android.domain.usecase.account.MonitorStorageStateEventUseCase
 import mega.privacy.android.domain.usecase.cache.GetCacheFileUseCase
 import mega.privacy.android.domain.usecase.call.AnswerChatCallUseCase
@@ -222,6 +224,7 @@ class ChatViewModel @Inject constructor(
     private val isGeolocationEnabledUseCase: IsGeolocationEnabledUseCase,
     private val enableGeolocationUseCase: EnableGeolocationUseCase,
     private val sendTextMessageUseCase: SendTextMessageUseCase,
+    private val networkUseCase: IsConnectNetworkUseCase,
     private val holdChatCallUseCase: HoldChatCallUseCase,
     private val hangChatCallUseCase: HangChatCallUseCase,
     private val joinPublicChatUseCase: JoinPublicChatUseCase,
@@ -828,6 +831,8 @@ class ChatViewModel @Inject constructor(
         }
     }
 
+    fun dismissOfflineDialog() = _state.update { it.copy(showOfflineDialog = false) }
+
     /**
      * Mute chat push notification based on user selection. And once mute operation succeeds,
      * send [InfoToShow] to show a message to indicate the result in UI.
@@ -1141,16 +1146,20 @@ class ChatViewModel @Inject constructor(
      */
     fun sendTextMessage(message: String) {
         viewModelScope.launch {
-            state.value.editingMessageId?.let {
-                val editedMessage = editMessageUseCase(chatId, it, message)
-                onCloseEditing()
-                if (editedMessage == null) {
-                    messageCannotBeEdited()
+            if (networkUseCase()) {
+                state.value.editingMessageId?.let {
+                    val editedMessage = editMessageUseCase(chatId, it, message)
+                    onCloseEditing()
+                    if (editedMessage == null) {
+                        messageCannotBeEdited()
+                    }
+                } ?: runCatching {
+                    sendTextMessageUseCase(chatId, message)
+                }.onFailure {
+                    Timber.e(it)
                 }
-            } ?: runCatching {
-                sendTextMessageUseCase(chatId, message)
-            }.onFailure {
-                Timber.e(it)
+            } else {
+                _state.update { state -> state.copy(showOfflineDialog = true) }
             }
         }
     }

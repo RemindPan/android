@@ -107,6 +107,7 @@ data class ChatUiState(
     val addingReactionTo: Long? = null,
     val gmsDocumentScanner: StateEventWithContent<GmsDocumentScanner> = consumed(),
     val documentScanningError: DocumentScanningError? = null,
+    val showOfflineDialog: Boolean = false
 ) {
 
     /**
