@@ -89,6 +89,7 @@ class ImagePreviewProvider @Inject constructor(
             startImagePreviewFromMD(
                 activity = activity,
                 photo = photo,
+                currentSort = currentSort,
                 folderNodeId = folderNodeId,
             )
         }
@@ -97,6 +98,7 @@ class ImagePreviewProvider @Inject constructor(
     private fun startImagePreviewFromMD(
         activity: Activity,
         photo: Photo,
+        currentSort: Sort,
         folderNodeId: Long?,
     ) {
         (activity as LifecycleOwner).lifecycleScope.launch {
@@ -108,6 +110,7 @@ class ImagePreviewProvider @Inject constructor(
                     imageSource = ImagePreviewFetcherSource.MEDIA_DISCOVERY,
                     menuOptionsSource = ImagePreviewMenuSource.MEDIA_DISCOVERY,
                     anchorImageNodeId = NodeId(photo.id),
+                    sortOrder = currentSort,
                     params = mapOf(PARENT_ID to parentID, IS_RECURSIVE to recursive),
                     enableAddToAlbum = true,
                 ).run {

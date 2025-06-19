@@ -49,6 +49,7 @@ import mega.privacy.android.app.presentation.imagepreview.ImagePreviewViewModel.
 import mega.privacy.android.app.presentation.imagepreview.ImagePreviewViewModel.Companion.IMAGE_PREVIEW_ADD_TO_ALBUM
 import mega.privacy.android.app.presentation.imagepreview.ImagePreviewViewModel.Companion.IMAGE_PREVIEW_IS_FOREIGN
 import mega.privacy.android.app.presentation.imagepreview.ImagePreviewViewModel.Companion.IMAGE_PREVIEW_MENU_OPTIONS
+import mega.privacy.android.app.presentation.imagepreview.ImagePreviewViewModel.Companion.IMAGE_PREVIEW_SORT_ORDER
 import mega.privacy.android.app.presentation.imagepreview.ImagePreviewViewModel.Companion.PARAMS_CURRENT_IMAGE_NODE_ID_VALUE
 import mega.privacy.android.app.presentation.imagepreview.model.ImagePreviewFetcherSource
 import mega.privacy.android.app.presentation.imagepreview.model.ImagePreviewMenuSource
@@ -59,6 +60,7 @@ import mega.privacy.android.app.presentation.offline.action.HandleOfflineNodeAct
 import mega.privacy.android.app.presentation.offline.action.OfflineNodeActionsViewModel
 import mega.privacy.android.app.presentation.passcode.model.PasscodeCryptObjectFactory
 import mega.privacy.android.app.presentation.photos.albums.add.AddToAlbumActivity
+import mega.privacy.android.app.presentation.photos.model.Sort
 import mega.privacy.android.app.presentation.psa.PsaContainer
 import mega.privacy.android.app.presentation.security.check.PasscodeContainer
 import mega.privacy.android.app.presentation.settings.model.StorageTargetPreference
@@ -519,6 +521,7 @@ class ImagePreviewActivity : BaseActivity() {
             imageSource: ImagePreviewFetcherSource,
             menuOptionsSource: ImagePreviewMenuSource,
             anchorImageNodeId: NodeId? = null,
+            sortOrder: Sort = Sort.DEFAULT,
             params: Map<String, Any> = mapOf(),
             isForeign: Boolean = false,
             enableAddToAlbum: Boolean = false,
@@ -528,6 +531,7 @@ class ImagePreviewActivity : BaseActivity() {
                 putExtra(IMAGE_PREVIEW_MENU_OPTIONS, menuOptionsSource)
                 putExtra(PARAMS_CURRENT_IMAGE_NODE_ID_VALUE, anchorImageNodeId?.longValue)
                 putExtra(FETCHER_PARAMS, bundleOf(*params.toList().toTypedArray()))
+                putExtra(IMAGE_PREVIEW_SORT_ORDER, sortOrder)
                 putExtra(IMAGE_PREVIEW_IS_FOREIGN, isForeign)
                 putExtra(IMAGE_PREVIEW_ADD_TO_ALBUM, enableAddToAlbum)
             }

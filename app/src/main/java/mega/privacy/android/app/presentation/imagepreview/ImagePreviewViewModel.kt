@@ -34,6 +34,7 @@ import mega.privacy.android.app.presentation.imagepreview.model.ImagePreviewFetc
 import mega.privacy.android.app.presentation.imagepreview.model.ImagePreviewMenuSource
 import mega.privacy.android.app.presentation.imagepreview.model.ImagePreviewState
 import mega.privacy.android.app.presentation.movenode.mapper.MoveRequestMessageMapper
+import mega.privacy.android.app.presentation.photos.model.Sort
 import mega.privacy.android.app.presentation.transfers.starttransfer.model.TransferTriggerEvent
 import mega.privacy.android.domain.entity.GifFileTypeInfo
 import mega.privacy.android.domain.entity.ImageFileTypeInfo
@@ -124,6 +125,9 @@ class ImagePreviewViewModel @Inject constructor(
     private val imagePreviewMenuSource: ImagePreviewMenuSource
         get() = savedStateHandle[IMAGE_PREVIEW_MENU_OPTIONS] ?: ImagePreviewMenuSource.TIMELINE
 
+    private val sort: Sort
+        get() = savedStateHandle[IMAGE_PREVIEW_SORT_ORDER] ?: Sort.DEFAULT
+
     private val isFromFolderLink = savedStateHandle[IMAGE_PREVIEW_IS_FOREIGN] ?: false
 
     private val imageNodesOffline: MutableMap<NodeId, Boolean> = mutableMapOf()
@@ -180,7 +184,7 @@ class ImagePreviewViewModel @Inject constructor(
             val isBusinessAccountExpired = businessStatus == BusinessAccountStatus.Expired
 
             val filteredImageNodes = filterNonSensitiveNodes(
-                imageNodes = imageNodes,
+                imageNodes = sortImageNodes(imageNodes),
                 showHiddenItems = showHiddenItems,
                 isPaid = accountType?.isPaid,
                 isBusinessAccountExpired = isBusinessAccountExpired,
@@ -233,18 +237,19 @@ class ImagePreviewViewModel @Inject constructor(
         imageFetcher.monitorImageNodes(params)
             .catch { Timber.e(it) }
             .mapLatest { imageNodes ->
+                val sortedImageNodes = sortImageNodes(imageNodes)
                 val (currentImageNodeIndex, currentImageNode) = findCurrentImageNode(
-                    imageNodes
+                    sortedImageNodes
                 )
                 val isCurrentImageNodeAvailableOffline =
                     currentImageNode?.isAvailableOffline ?: false
 
-                Timber.d("ImagePreview VM imageNodes: ${imageNodes.size}")
+                Timber.d("ImagePreview VM imageNodes: ${sortedImageNodes.size}")
 
                 _state.update {
                     it.copy(
                         isInitialized = true,
-                        imageNodes = imageNodes,
+                        imageNodes = sortedImageNodes,
                         currentImageNodeIndex = currentImageNodeIndex,
                         currentImageNode = currentImageNode,
                         isCurrentImageNodeAvailableOffline = isCurrentImageNodeAvailableOffline
@@ -435,7 +440,7 @@ class ImagePreviewViewModel @Inject constructor(
     }
 
     fun setFullScreenMode(
-        isFullScreenMode: Boolean
+        isFullScreenMode: Boolean,
     ) {
         _state.update {
             it.copy(
@@ -534,6 +539,14 @@ class ImagePreviewViewModel @Inject constructor(
             } else {
                 removeOfflineNodeUseCase(imageNode.id)
             }
+        }
+    }
+
+    private fun sortImageNodes(imageNodes: List<ImageNode>): List<ImageNode> {
+        return when (sort) {
+            Sort.NEWEST -> imageNodes.sortedWith(compareByDescending { it.modificationTime })
+            Sort.OLDEST -> imageNodes.sortedWith(compareBy { it.modificationTime })
+            else -> imageNodes.sortedWith(compareBy { it.modificationTime })
         }
     }
 
@@ -891,5 +904,6 @@ class ImagePreviewViewModel @Inject constructor(
         const val PARAMS_CURRENT_IMAGE_NODE_ID_VALUE = "currentImageNodeIdValue"
         const val IMAGE_PREVIEW_IS_FOREIGN = "image_preview_is_foreign"
         const val IMAGE_PREVIEW_ADD_TO_ALBUM = "image_preview_add_to_album"
+        const val IMAGE_PREVIEW_SORT_ORDER = "image_preview_sort_order"
     }
 }
