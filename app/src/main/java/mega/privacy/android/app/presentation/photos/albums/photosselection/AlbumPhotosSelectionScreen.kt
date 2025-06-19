@@ -198,10 +198,11 @@ fun AlbumPhotosSelectionScreen(
                             selectedPhotoIds = state.selectedPhotoIds,
                         )
                     },
-                    backgroundColor = accent_900,
+                    backgroundColor = accent_900.takeIf { isLight } ?: accent_050,
                 ) {
                     Icon(
-                        painter = painterResource(id = iconPackR.drawable.ic_check_medium_regular_outline),
+                        painter = painterResource(id = iconPackR.drawable.ic_check_medium_regular_outline_white.takeIf { isLight }
+                            ?: iconPackR.drawable.ic_check_medium_regular_outline),
                         contentDescription = null,
                         tint = white.takeIf { isLight } ?: black,
                     )
@@ -293,13 +294,11 @@ private fun AlbumPhotosSelectionHeader(
         navigationIcon = {
             IconButton(onClick = onBackClicked) {
                 Icon(
-                    painter = painterResource(id = R.drawable.ic_arrow_back_white.takeIf { isLight }
-                        ?: R.drawable.ic_arrow_back_black
+                    painter = painterResource(id = R.drawable.ic_arrow_back_black.takeIf { isLight }
+                        ?: R.drawable.ic_arrow_back_white
                     ),
                     contentDescription = null,
-                    tint = accent_900.takeIf {
-                        numSelectedPhotos > 0
-                    } ?: (black.takeIf { isLight } ?: white),
+                    tint = black.takeIf { isLight } ?: white,
                 )
             }
         },
@@ -323,10 +322,10 @@ private fun AlbumPhotosSelectionHeader(
                 IconButton(onClick = onMoreClicked) {
                     Icon(
                         painter = painterResource(
-                            id = R.drawable.ic_dots_vertical_white.takeIf { isLight }
-                                ?: mega.privacy.android.core.R.drawable.ic_dots_vertical_grey),
+                            id = mega.privacy.android.core.R.drawable.ic_dots_vertical_grey.takeIf { isLight }
+                                ?: R.drawable.ic_dots_vertical_white),
                         contentDescription = null,
-                        tint = accent_900,
+                        tint = black.takeIf { isLight } ?: white,
                     )
                 }
 
@@ -558,7 +557,9 @@ private fun EmptyStateContent(modifier: Modifier = Modifier) {
 
             Text(
                 text = text.substring(0, text.indexOf(placeHolderStart)),
-                color = colorResource(id = R.color.grey_054_white_054),
+                color = if (MaterialTheme.colors.isLight) colorResource(id = R.color.grey_054_white_054) else colorResource(
+                    id = R.color.accent_050
+                )
             )
 
             Text(
@@ -566,13 +567,17 @@ private fun EmptyStateContent(modifier: Modifier = Modifier) {
                     text.indexOf(placeHolderStart),
                     text.indexOf(placeHolderEnd)
                 ).replace("[B]", ""),
-                color = colorResource(id = R.color.grey_087_white_087),
+                color = if (MaterialTheme.colors.isLight) colorResource(id = R.color.grey_054_white_054) else colorResource(
+                    id = R.color.accent_050
+                ),
                 fontWeight = FontWeight.ExtraBold,
             )
 
             Text(
                 text = text.substring(text.indexOf(placeHolderEnd)).replace("[/B]", ""),
-                color = colorResource(id = R.color.grey_054_white_054),
+                color = if (MaterialTheme.colors.isLight) colorResource(id = R.color.grey_054_white_054) else colorResource(
+                    id = R.color.accent_050
+                ),
             )
         }
     }
